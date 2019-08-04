@@ -1,27 +1,34 @@
 #!/usr/bin/env python3
+import array
 
 class Sensor:
     name = "python"
     columns = 0
     rows = 0
+    frames = 0
 
-    def generate(self, frames):
+    def generate(self):
 
-        array_size = self.columns * self.rows
-        chunk = bytearray(array_size)
+        sensor_size = self.columns * self.rows
+        array_size = sensor_size * self.frames
+        chunk = array.array('i', (0 for i in range(array_size)))
 
-        for i in range(0, array_size):
-            chunk[i] = i
-            i += 1
+        for j in range(0, self.frames):
+            for i in range(0, sensor_size):
+                chunk[j * sensor_size + i] = j * 256 + i
+
         return chunk
 
     def print(self, chunk):
 
-        print_data = bytearray(self.columns)
-        for i in range(0, self.rows):
-            for j in range(0, self.columns):
-                print_data[j] = chunk[self.columns * i + j]
-            print(str(print_data))
+        sensor_size = self.columns * self.rows
+        array_size = sensor_size * self.frames
+        print_data = array.array('i', (0 for i in range(self.columns)))
+        for k in range(0, self.frames):
+            for i in range(0, self.rows):
+                for j in range(0, self.columns):
+                    print_data[j] = chunk[k * sensor_size + self.columns * i + j]
+                print(print_data)
 
 
 if __name__ == '__main__':
@@ -30,8 +37,11 @@ if __name__ == '__main__':
         ic = Sensor()
         ic.columns = 4
         ic.rows = 4
-        chunk = ic.generate(1)
+        ic.frames = 2
+        chunk = ic.generate()
         ic.print(chunk)
 
     except:
         print("There's a problem with your code. Write better code!")
+
+
